@@ -7,11 +7,22 @@ import dev.ethans.cscbattlegrounds.data.BattlegroundsSpawns;
 import dev.ethans.cscbattlegrounds.state.base.GameState;
 import dev.ethans.cscbattlegrounds.state.ingame.listener.PlayerListener;
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,6 +36,9 @@ public class InGameState extends GameState {
     private final double SHRINK_AMOUNT = plugin.getConfig().getDouble("WORLD_BORDER.SHRINK_AMOUNT");
     private final double INITIAL_SIZE = plugin.getConfig().getDouble("WORLD_BORDER.INITIAL_SIZE");
     private final double MIN_SIZE = plugin.getConfig().getDouble("WORLD_BORDER.MINIMUM_SIZE");
+
+    private final List<ArmorStand> instancedChestDisplays = new ArrayList<>();
+    private final List<Chest> instancedChests = new ArrayList<>();
 
     @Getter
     private ShrinkingWorldBorder shrinkingWorldBorder;
@@ -42,7 +56,8 @@ public class InGameState extends GameState {
 
     @Override
     protected void onEnd() {
-
+        instancedChests.forEach(chest -> chest.setType(Material.AIR));
+        instancedChestDisplays.forEach(Entity::remove);
     }
 
     @Override
@@ -61,6 +76,23 @@ public class InGameState extends GameState {
             if (spawn == null) return;
             battlegroundsTeam.getAllPlayers().forEach(player -> player.teleport(spawn.getPosition().toLocation()));
             spawns.remove(spawn);
+        });
+
+        BattlegroundsSpawns.getChestSpawns().forEach((id, chestSpawn) ->
+        {
+            Location location = chestSpawn.getPosition().toLocation();
+            location.getBlock().setType(Material.CHEST);
+
+            Chest chest = (Chest) location.getBlock().getState();
+            chest.setMetadata("chest-id", new FixedMetadataValue(plugin, id));
+            instancedChests.add(chest);
+
+            ArmorStand armorStand = location.getWorld().spawn(location.clone().add(0, 1, 0), ArmorStand.class);
+            armorStand.customName(Component.text("Instanced Chest", TextColor.fromHexString("#1dacf7")));
+            armorStand.setCustomNameVisible(true);
+            armorStand.setGravity(false);
+            armorStand.setVisible(false);
+            instancedChestDisplays.add(armorStand);
         });
     }
 
