@@ -1,6 +1,8 @@
 package dev.ethans.cscbattlegrounds.data;
 
 import lombok.Data;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 @Data
 public class Position {
@@ -18,4 +20,12 @@ public class Position {
     }
 
     public Position() {}
+
+    public Location toLocation() {
+        return new Location(Bukkit.getWorld(world), x, y, z);
+    }
+
+    public static Position fromLocation(Location location) {
+        return new Position(location.getWorld().getName(), location.getX(), location.getY(), location.getZ());
+    }
 }

@@ -2,6 +2,8 @@ package dev.ethans.cscbattlegrounds.state.ingame;
 
 import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
 import dev.ethans.cscbattlegrounds.border.ShrinkingWorldBorder;
+import dev.ethans.cscbattlegrounds.data.BattlegroundSpawn;
+import dev.ethans.cscbattlegrounds.data.BattlegroundsSpawns;
 import dev.ethans.cscbattlegrounds.state.base.GameState;
 import dev.ethans.cscbattlegrounds.state.ingame.listener.PlayerListener;
 import lombok.Getter;
@@ -9,6 +11,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class InGameState extends GameState {
 
@@ -42,8 +47,21 @@ public class InGameState extends GameState {
 
     @Override
     protected void onStart() {
+        plugin.getLogger().info("Creating shrinking world border...");
         shrinkingWorldBorder = new ShrinkingWorldBorder(TIME_UNTIL_SHRINK, SHRINK_INTERVAL, SHRINK_TIME,
                 SHRINK_AMOUNT, INITIAL_SIZE, MIN_SIZE);
+
+        Set<BattlegroundSpawn> spawns = new HashSet<>(BattlegroundsSpawns.getPlayerSpawns().values());
+
+        plugin.getLogger().info("Teleporting players to their spawns...");
+        plugin.getGameManager().getTeams().forEach(battlegroundsTeam ->
+        {
+            // Grab random spawn then remove it from the set
+            BattlegroundSpawn spawn = spawns.stream().skip((int) (spawns.size() * Math.random())).findFirst().orElse(null);
+            if (spawn == null) return;
+            battlegroundsTeam.getAllPlayers().forEach(player -> player.teleport(spawn.getPosition().toLocation()));
+            spawns.remove(spawn);
+        });
     }
 
     @Override
