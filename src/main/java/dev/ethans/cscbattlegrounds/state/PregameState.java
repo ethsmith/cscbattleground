@@ -11,6 +11,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -54,18 +55,17 @@ public class PregameState extends GameState {
     @Override
     public void onUpdate() {
         if (allPlayersReady) return;
-
         ticks++;
-
         if (ticks != 20) return;
 
-        ticks = 0;
-        plugin.getServer().getOnlinePlayers().forEach(player -> {
-                player.sendActionBar(Component.text(
-                        "(" + gameManager.playersOnline() + "/" + gameManager.maxPlayers() + ") Players ready!",
-                        TextColor.fromHexString("#1dacf7")));
+        plugin.getServer().getOnlinePlayers().forEach(player ->
+        {
+            player.sendActionBar(Component.text(
+                    "(" + gameManager.playersOnline() + "/" + gameManager.maxPlayers() + ") Players ready!",
+                    TextColor.fromHexString("#1dacf7")));
         });
 
+        ticks = 0;
         allPlayersReady = gameManager.allPlayersOnline();
     }
 
@@ -78,6 +78,11 @@ public class PregameState extends GameState {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         new BattlegroundsScoreboard(player);
-        plugin.getLogger().info("Player " + player.getName() + " joined the game (PregameState)");
+    }
+
+    @EventHandler
+    public void onPlayerDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player)) return;
+        event.setCancelled(true);
     }
 }
