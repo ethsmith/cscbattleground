@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
 import lombok.Getter;
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
@@ -39,14 +37,18 @@ public class BattlegroundsSpawns {
         while (!playerSpawnDeleteQueue.isEmpty()) {
             int id = playerSpawnDeleteQueue.poll();
             BattlegroundSpawn spawn = playerSpawns.get(id);
+
             if (spawn == null) continue;
+
             // Delete file matching id in plugin data folder / spawns
             File file = new File(plugin.getDataFolder() + "/player-spawns/" + id + ".json");
+
             if (!file.exists()) continue;
+
             boolean deleted = file.delete();
-            if (!deleted) {
+
+            if (!deleted)
                 plugin.getLogger().warning("Failed to delete file " + file.getName());
-            }
         }
     }
 
@@ -54,14 +56,18 @@ public class BattlegroundsSpawns {
         while (!chestSpawnDeleteQueue.isEmpty()) {
             int id = chestSpawnDeleteQueue.poll();
             ChestSpawn spawn = chestSpawns.get(id);
+
             if (spawn == null) continue;
+
             // Delete file matching id in plugin data folder / spawns
             File file = new File(plugin.getDataFolder() + "/chest-spawns/" + id + ".json");
+
             if (!file.exists()) continue;
+
             boolean deleted = file.delete();
-            if (!deleted) {
+
+            if (!deleted)
                 plugin.getLogger().warning("Failed to delete file " + file.getName());
-            }
         }
     }
 
@@ -76,12 +82,13 @@ public class BattlegroundsSpawns {
 
         for (File file : files) {
             plugin.getLogger().info("Loading player spawn " + file.getName());
+
             // use gson to load file into BattlegroundSpawn object
-            String contents = FileUtils.fileRead(file);
-            JsonReader reader = new JsonReader(new StringReader(contents));
-            reader.setLenient(true);
+            JsonReader reader = getJsonReader(file);
             BattlegroundSpawn spawn = gson.fromJson(reader, BattlegroundSpawn.class);
+
             if (spawn == null) continue;
+
             // add to battlegroundSpawns map
             playerSpawns.put(spawn.getId(), spawn);
         }
@@ -98,20 +105,23 @@ public class BattlegroundsSpawns {
 
         for (File file : files) {
             plugin.getLogger().info("Loading chest spawn " + file.getName());
+
             // use gson to load file into BattlegroundSpawn object
-            String contents = FileUtils.fileRead(file);
-            JsonReader reader = new JsonReader(new StringReader(contents));
-            reader.setLenient(true);
+            JsonReader reader = getJsonReader(file);
             ChestSpawn spawn = gson.fromJson(reader, ChestSpawn.class);
+
             if (spawn == null) continue;
-            plugin.getLogger().info("Loaded chest spawn " + spawn.getId() + " at " + spawn.getPosition().getWorld()
-                    + ", " + spawn.getPosition().getX() + ", " + spawn.getPosition().getY() + ", " + spawn.getPosition().getZ());
+
             // add to battlegroundSpawns map
             chestSpawns.put(spawn.getId(), spawn);
-            Location location = new Location(plugin.getServer().getWorld(spawn.getPosition().getWorld()),
-                    spawn.getPosition().getX(), spawn.getPosition().getY(), spawn.getPosition().getZ());
-            location.getBlock().setType(Material.CHEST);
         }
+    }
+
+    private static JsonReader getJsonReader(File file) throws IOException {
+        String contents = FileUtils.fileRead(file);
+        JsonReader reader = new JsonReader(new StringReader(contents));
+        reader.setLenient(true);
+        return reader;
     }
 
     private static boolean createNeededFolders(File path) {
