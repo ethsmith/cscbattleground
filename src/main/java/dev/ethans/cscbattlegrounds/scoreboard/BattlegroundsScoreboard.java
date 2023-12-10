@@ -2,6 +2,7 @@ package dev.ethans.cscbattlegrounds.scoreboard;
 
 import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
 import dev.ethans.cscbattlegrounds.team.BattlegroundsTeam;
+import dev.ethans.cscbattlegrounds.util.StringUtil;
 import fr.mrmicky.fastboard.adventure.FastBoard;
 import lombok.Data;
 import net.kyori.adventure.text.Component;
@@ -56,6 +57,10 @@ public class BattlegroundsScoreboard {
 
             teamMembers.add(Component.text(playerName, textColor));
         });
+
+        teamMembers.add(Component.text(""));
+        teamMembers.add(Component.text("Team Color: ", TextColor.fromHexString("#3454D1")));
+        teamMembers.add(Component.text(StringUtil.firstLetterUppercase(team.getColor()), team.getTextColor()));
 
         board.updateLines(teamMembers);
     }
