@@ -18,21 +18,23 @@ import java.util.*;
 @Data
 public class InstancedChest {
 
-    private final Inventory inventory;
-
     private final int id;
 
     private final Chest chest;
 
     @Getter
-    private static final Map<Player, Inventory> savedPlayerInventories = new HashMap<>();
+    private final Map<Player, Inventory> savedPlayerInventories = new HashMap<>();
 
-    public InstancedChest(int id, Inventory inventory, Chest chest) {
+    public InstancedChest(int id, Chest chest) {
         this.id = id;
-        this.inventory = inventory;
         this.chest = chest;
-        this.inventory.addItem(getRandomItems());
-        shuffleInventory(this.inventory);
+    }
+
+    public Inventory generateInventory(Player player, Inventory inventory) {
+        inventory.addItem(getRandomItems());
+        shuffleInventory(inventory);
+        savedPlayerInventories.put(player, inventory);
+        return inventory;
     }
 
     private List<LootTableEntry> getLootTable() {

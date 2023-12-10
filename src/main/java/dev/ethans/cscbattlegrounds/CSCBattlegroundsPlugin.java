@@ -36,6 +36,8 @@ public final class CSCBattlegroundsPlugin extends JavaPlugin {
     @Getter
     private ShrinkingWorldBorder shrinkingWorldBorder;
 
+    private ScheduledStateSeries stateSeries;
+
     @Override
     public void onEnable() {
         // Plugin startup logic
@@ -68,7 +70,7 @@ public final class CSCBattlegroundsPlugin extends JavaPlugin {
 
         dayNightCycle = new DayNightCycle();
 
-        ScheduledStateSeries stateSeries = new ScheduledStateSeries(this);
+        stateSeries = new ScheduledStateSeries(this);
         stateSeries.add(new PregameState(this));
         stateSeries.add(new InGameState(this));
         stateSeries.start();
@@ -78,6 +80,8 @@ public final class CSCBattlegroundsPlugin extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         gameManager.saveTeams();
+
+        stateSeries.end();
 
         BattlegroundsSpawns.deletePlayerSpawnFiles();
         BattlegroundsSpawns.saveBattlegroundSpawns();

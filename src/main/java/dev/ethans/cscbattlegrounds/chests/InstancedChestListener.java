@@ -1,12 +1,11 @@
 package dev.ethans.cscbattlegrounds.chests;
 
 import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
+import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,7 +22,8 @@ public class InstancedChestListener implements Listener {
 
     private static final CSCBattlegroundsPlugin plugin = CSCBattlegroundsPlugin.getInstance();
 
-    private final Map<Player, Map<Integer, InstancedChest>> playerChestInstances = new HashMap<>();
+    @Getter
+    private static final Map<Integer, InstancedChest> instancedChests = new HashMap<>();
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onChestOpen(PlayerInteractEvent event) {
@@ -40,27 +40,24 @@ public class InstancedChestListener implements Listener {
 
         int id = block.getMetadata("chest-id").get(0).asInt();
 
-        if (playerChestInstances.containsKey(player) && playerChestInstances.get(player).containsKey(id)) {
-            InstancedChest instancedChest = playerChestInstances.get(player).get(id);
-            instancedChest.getChest().open();
-            player.openInventory(InstancedChest.getSavedPlayerInventories().get(player));
-            return;
-        }
+        if (!instancedChests.containsKey(id)) return;
 
         event.setCancelled(true);
 
-        Inventory inventory = plugin.getServer().createInventory(null, 27, Component.text("Instanced Chest #" + id));
+        InstancedChest instancedChest = instancedChests.get(id);
 
-        InstancedChest instancedChest = new InstancedChest(id, inventory, (Chest) block.getState());
-        InstancedChest.getSavedPlayerInventories().put(player, player.getInventory());
+        if (instancedChest.getSavedPlayerInventories().containsKey(player)) {
+            Inventory inventory = instancedChest.getSavedPlayerInventories().get(player);
+            instancedChest.getChest().open();
+            player.openInventory(inventory);
+            return;
+        }
+
+        Inventory inventory = instancedChest.generateInventory(player, plugin.getServer()
+                .createInventory(null, 27, Component.text("Instanced Chest #" + id)));
+
         instancedChest.getChest().open();
-
         player.openInventory(inventory);
-
-        if (!playerChestInstances.containsKey(player))
-            playerChestInstances.put(player, new HashMap<>());
-
-        playerChestInstances.get(player).put(id, instancedChest);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -68,20 +65,16 @@ public class InstancedChestListener implements Listener {
         if (event.getInventory().getHolder() != null) return;
 
         Player player = (Player) event.getPlayer();
-
-        if (!playerChestInstances.containsKey(player)) return;
-
-        Map<Integer, InstancedChest> playerChests = playerChestInstances.get(player);
-
         TextComponent title = (TextComponent) event.getView().title();
 
         if (!title.content().startsWith("Instanced Chest #")) return;
 
         int id = Integer.parseInt(title.content().split("#")[1]);
 
-        if (!playerChests.containsKey(id)) return;
+        InstancedChest instancedChest = instancedChests.get(id);
 
-        InstancedChest instancedChest = playerChests.get(id);
+        if (!instancedChest.getSavedPlayerInventories().containsKey(player)) return;
+
         instancedChest.getChest().close();
     }
 }

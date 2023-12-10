@@ -2,6 +2,8 @@ package dev.ethans.cscbattlegrounds.state.ingame;
 
 import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
 import dev.ethans.cscbattlegrounds.border.ShrinkingWorldBorder;
+import dev.ethans.cscbattlegrounds.chests.InstancedChest;
+import dev.ethans.cscbattlegrounds.chests.InstancedChestListener;
 import dev.ethans.cscbattlegrounds.data.BattlegroundSpawn;
 import dev.ethans.cscbattlegrounds.data.BattlegroundsSpawns;
 import dev.ethans.cscbattlegrounds.state.base.GameState;
@@ -56,6 +58,7 @@ public class InGameState extends GameState {
 
     @Override
     protected void onEnd() {
+        plugin.getLogger().info("Ingame state ended");
         instancedChests.forEach(chest -> chest.setType(Material.AIR));
         instancedChestDisplays.forEach(Entity::remove);
     }
@@ -88,6 +91,7 @@ public class InGameState extends GameState {
             Chest chest = (Chest) location.getBlock().getState();
             chest.setMetadata("chest-id", new FixedMetadataValue(plugin, id));
             instancedChests.add(chest);
+            InstancedChestListener.getInstancedChests().put(id, new InstancedChest(id, chest));
 
             ArmorStand armorStand = location.getWorld().spawn(location.clone().subtract(0, 0.75, 0), ArmorStand.class);
             armorStand.customName(Component.text("Instanced Chest", TextColor.fromHexString("#1dacf7")));

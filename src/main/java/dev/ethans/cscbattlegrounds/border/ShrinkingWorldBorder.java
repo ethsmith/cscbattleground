@@ -3,10 +3,17 @@ package dev.ethans.cscbattlegrounds.border;
 import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
 import dev.ethans.cscbattlegrounds.notices.Notices;
 import lombok.Data;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.title.Title;
 import org.bukkit.WorldBorder;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Data
@@ -26,6 +33,8 @@ public class ShrinkingWorldBorder {
     private final double minimumSize;
 
     private final WorldBorder worldBorder;
+
+    private final Map<Player, BossBar> bossBars = new HashMap<>();
 
     public ShrinkingWorldBorder(Duration timeUntilShrink, Duration shrinkInterval, Duration shrinkTime, double shrinkAmount, double initialSize, double minimumSize) {
         this.timeUntilShrink = timeUntilShrink;
@@ -72,8 +81,18 @@ public class ShrinkingWorldBorder {
                 }
 
                 long secondsLeft = secondsToShrink.getAndDecrement();
+                float progress = (float) secondsLeft / shrinkInterval.getSeconds();
+                TextComponent component = secondsLeft == 0 ? Notices.worldBorderShrinking() : Notices.worldBorderTime(secondsLeft);
+
                 plugin.getServer().getOnlinePlayers().forEach(player -> {
-                    player.sendActionBar(Notices.worldBorderTime(secondsLeft));
+                    if (bossBars.containsKey(player)) {
+                        bossBars.get(player).progress(progress);
+                        bossBars.get(player).name(component);
+                        return;
+                    }
+                    BossBar bossBar = BossBar.bossBar(component, progress, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
+                    player.showBossBar(bossBar);
+                    bossBars.put(player, bossBar);
                 });
 
                 if (secondsToShrink.get() == 0)

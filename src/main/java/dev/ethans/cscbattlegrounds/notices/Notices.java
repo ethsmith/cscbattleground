@@ -34,10 +34,11 @@ public class Notices {
     }
 
     public static TextComponent worldBorderShrinking() {
-        return Component.text("The world border is shrinking!").color(NamedTextColor.RED);
+        return Component.text("The world border is shrinking!", TextColor.fromHexString("#EF6461"));
     }
 
     public static TextComponent worldBorderTime(long timeLeft) {
-        return Component.text("The world border will shrink in " + timeLeft + " seconds!").color(NamedTextColor.AQUA);
+        String time = String.format("%02d:%02d", timeLeft / 60, timeLeft % 60);
+        return Component.text("World Border Duration: " + time, TextColor.fromHexString("#1DACF7"));
     }
 }
