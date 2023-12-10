@@ -41,4 +41,9 @@ public class Notices {
         String time = String.format("%02d:%02d", timeLeft / 60, timeLeft % 60);
         return Component.text("World Border Duration: " + time, TextColor.fromHexString("#1DACF7"));
     }
+
+    public static String worldBorderTimeString(long timeLeft) {
+        String time = String.format("%02d:%02d", timeLeft / 60, timeLeft % 60);
+        return "Border: " + time;
+    }
 }

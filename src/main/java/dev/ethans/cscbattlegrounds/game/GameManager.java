@@ -35,6 +35,13 @@ public class GameManager {
         return teams.stream().filter(team -> team.getPlayers().contains(player.getUniqueId())).findFirst().orElse(null);
     }
 
+    public int getAlivePlayerCount() {
+        return (int) teams.stream().flatMap(team -> team.getPlayers().stream()).filter(uuid -> {
+            if (plugin.getServer().getPlayer(uuid) == null) return false;
+            return Objects.requireNonNull(plugin.getServer().getPlayer(uuid)).isOnline();
+        }).count();
+    }
+
     public boolean allPlayersOnline() {
         return teams.stream().allMatch(team -> team.getPlayers().stream().allMatch(uuid -> {
             if (plugin.getServer().getPlayer(uuid) == null) return false;

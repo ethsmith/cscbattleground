@@ -8,7 +8,6 @@ import dev.ethans.cscbattlegrounds.data.BattlegroundsConfig;
 import dev.ethans.cscbattlegrounds.data.BattlegroundsSpawns;
 import dev.ethans.cscbattlegrounds.game.GameManager;
 import dev.ethans.cscbattlegrounds.listener.MobListener;
-import dev.ethans.cscbattlegrounds.listener.PlayerListener;
 import dev.ethans.cscbattlegrounds.listener.WorldTimeListener;
 import dev.ethans.cscbattlegrounds.state.ingame.InGameState;
 import dev.ethans.cscbattlegrounds.state.PregameState;
@@ -64,7 +63,6 @@ public final class CSCBattlegroundsPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new WorldTimeListener(), this);
         getServer().getPluginManager().registerEvents(new MobListener(), this);
-        getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getServer().getPluginManager().registerEvents(new InstancedChestListener(), this);
 //        getServer().getScheduler().runTaskLater(this, () -> dayNightCycle = new DayNightCycle(), 15 * 20);
 

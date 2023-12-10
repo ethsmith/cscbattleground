@@ -2,10 +2,12 @@ package dev.ethans.cscbattlegrounds.border;
 
 import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
 import dev.ethans.cscbattlegrounds.notices.Notices;
+import dev.ethans.cscbattlegrounds.util.StringUtil;
 import lombok.Data;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.WorldBorder;
 import org.bukkit.entity.Player;
@@ -82,7 +84,12 @@ public class ShrinkingWorldBorder {
 
                 long secondsLeft = secondsToShrink.getAndDecrement();
                 float progress = (float) secondsLeft / shrinkInterval.getSeconds();
-                TextComponent component = secondsLeft == 0 ? Notices.worldBorderShrinking() : Notices.worldBorderTime(secondsLeft);
+
+                String name = StringUtil.evenlySpaced(Notices.worldBorderTimeString(secondsLeft),
+                        "Alive: " + plugin.getGameManager().getAlivePlayerCount(),
+                        "Players: " + plugin.getGameManager().maxPlayers());
+
+                TextComponent component = Component.text(name, TextColor.fromHexString("#1dacf7"));
 
                 plugin.getServer().getOnlinePlayers().forEach(player -> {
                     if (bossBars.containsKey(player)) {
