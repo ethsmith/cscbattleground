@@ -1,5 +1,6 @@
 package dev.ethans.cscbattlegrounds.state.ingame;
 
+import com.nametagedit.plugin.NametagEdit;
 import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
 import dev.ethans.cscbattlegrounds.border.ShrinkingWorldBorder;
 import dev.ethans.cscbattlegrounds.chests.InstancedChest;
@@ -11,6 +12,7 @@ import dev.ethans.cscbattlegrounds.state.ingame.listener.PlayerListener;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -78,7 +80,10 @@ public class InGameState extends GameState {
                 // Grab random spawn then remove it from the set
                 BattlegroundSpawn spawn = spawns.stream().skip((int) (spawns.size() * Math.random())).findFirst().orElse(null);
                 if (spawn == null) return;
-                battlegroundsTeam.getAllPlayers().forEach(player -> player.teleport(spawn.getPosition().toLocation()));
+                battlegroundsTeam.getAllPlayers().forEach(player -> {
+                    NametagEdit.getApi().setPrefix(player, ChatColor.valueOf(battlegroundsTeam.getColor().toUpperCase()) + "");
+                    player.teleport(spawn.getPosition().toLocation());
+                });
                 spawns.remove(spawn);
             });
         }, 20 * 6);
