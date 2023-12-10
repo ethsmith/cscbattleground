@@ -3,7 +3,9 @@ package dev.ethans.cscbattlegrounds.chests;
 import lombok.Data;
 import lombok.Getter;
 import org.bukkit.Material;
+import org.bukkit.block.Chest;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -18,8 +20,17 @@ public class InstancedChest {
 
     private final Inventory inventory;
 
-    public InstancedChest(Inventory inventory) {
+    private final int id;
+
+    private final Chest chest;
+
+    @Getter
+    private static final Map<Player, Inventory> savedPlayerInventories = new HashMap<>();
+
+    public InstancedChest(int id, Inventory inventory, Chest chest) {
+        this.id = id;
         this.inventory = inventory;
+        this.chest = chest;
         this.inventory.addItem(getRandomItems());
         shuffleInventory(this.inventory);
     }
@@ -44,9 +55,17 @@ public class InstancedChest {
         List<ItemStack> items = new ArrayList<>();
 
         while (budget > 0) {
-            LootTableEntry entry = lootTable.get(new Random().nextInt(lootTable.size()));
-            items.add(entry.item());
+            List<LootTableEntry> entries = new ArrayList<>(lootTable);
+            LootTableEntry entry = entries.get(new Random().nextInt(entries.size()));
+
+            while (entry.weight() > budget) {
+                entry = entries.get(new Random().nextInt(entries.size()));
+                entries.remove(entry);
+                if (entries.isEmpty()) break;
+            }
+
             budget -= entry.weight();
+            items.add(entry.item());
         }
 
         return items.toArray(new ItemStack[0]);
@@ -61,7 +80,7 @@ public class InstancedChest {
     private record LootTableEntry(double weight, ItemStack item) {}
 
     private enum LootTable {
-        COMMON(0.05,
+        COMMON(0.15,
                 createItem("Bow", Material.BOW, 1),
                 createItem("Arrow", Material.ARROW, 15),
                 createItem("Stone Sword", Material.STONE_SWORD, Enchantment.DAMAGE_ALL, 1, 1),

@@ -66,7 +66,6 @@ public class InGameState extends GameState {
         shrinkingWorldBorder = new ShrinkingWorldBorder(TIME_UNTIL_SHRINK, SHRINK_INTERVAL, SHRINK_TIME,
                 SHRINK_AMOUNT, INITIAL_SIZE, MIN_SIZE);
 
-
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             Set<BattlegroundSpawn> spawns = new HashSet<>(BattlegroundsSpawns.getPlayerSpawns().values());
 
@@ -90,7 +89,7 @@ public class InGameState extends GameState {
             chest.setMetadata("chest-id", new FixedMetadataValue(plugin, id));
             instancedChests.add(chest);
 
-            ArmorStand armorStand = location.getWorld().spawn(location.clone().add(0, 1, 0), ArmorStand.class);
+            ArmorStand armorStand = location.getWorld().spawn(location.clone().subtract(0, 0.75, 0), ArmorStand.class);
             armorStand.customName(Component.text("Instanced Chest", TextColor.fromHexString("#1dacf7")));
             armorStand.setCustomNameVisible(true);
             armorStand.setGravity(false);
