@@ -66,17 +66,20 @@ public class InGameState extends GameState {
         shrinkingWorldBorder = new ShrinkingWorldBorder(TIME_UNTIL_SHRINK, SHRINK_INTERVAL, SHRINK_TIME,
                 SHRINK_AMOUNT, INITIAL_SIZE, MIN_SIZE);
 
-        Set<BattlegroundSpawn> spawns = new HashSet<>(BattlegroundsSpawns.getPlayerSpawns().values());
 
-        plugin.getLogger().info("Teleporting players to their spawns...");
-        plugin.getGameManager().getTeams().forEach(battlegroundsTeam ->
-        {
-            // Grab random spawn then remove it from the set
-            BattlegroundSpawn spawn = spawns.stream().skip((int) (spawns.size() * Math.random())).findFirst().orElse(null);
-            if (spawn == null) return;
-            battlegroundsTeam.getAllPlayers().forEach(player -> player.teleport(spawn.getPosition().toLocation()));
-            spawns.remove(spawn);
-        });
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            Set<BattlegroundSpawn> spawns = new HashSet<>(BattlegroundsSpawns.getPlayerSpawns().values());
+
+            plugin.getLogger().info("Teleporting players to their spawns...");
+            plugin.getGameManager().getTeams().forEach(battlegroundsTeam ->
+            {
+                // Grab random spawn then remove it from the set
+                BattlegroundSpawn spawn = spawns.stream().skip((int) (spawns.size() * Math.random())).findFirst().orElse(null);
+                if (spawn == null) return;
+                battlegroundsTeam.getAllPlayers().forEach(player -> player.teleport(spawn.getPosition().toLocation()));
+                spawns.remove(spawn);
+            });
+        }, 20 * 6);
 
         BattlegroundsSpawns.getChestSpawns().forEach((id, chestSpawn) ->
         {
