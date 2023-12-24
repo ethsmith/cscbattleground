@@ -4,6 +4,7 @@ import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
 import dev.ethans.cscbattlegrounds.notices.Notices;
 import dev.ethans.cscbattlegrounds.util.StringUtil;
 import lombok.Data;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -37,6 +38,8 @@ public class ShrinkingWorldBorder {
     private final WorldBorder worldBorder;
 
     private final Map<Player, BossBar> bossBars = new HashMap<>();
+
+    private boolean timerEnded = false;
 
     public ShrinkingWorldBorder(Duration timeUntilShrink, Duration shrinkInterval, Duration shrinkTime, double shrinkAmount, double initialSize, double minimumSize) {
         this.timeUntilShrink = timeUntilShrink;
@@ -77,7 +80,8 @@ public class ShrinkingWorldBorder {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (worldBorder.getSize() <= minimumSize) {
+                if (worldBorder.getSize() <= minimumSize || timerEnded) {
+                    timerEnded = true;
                     cancel();
                     return;
                 }
@@ -106,5 +110,10 @@ public class ShrinkingWorldBorder {
                     secondsToShrink.set(shrinkInterval.getSeconds());
             }
         }.runTaskTimer(plugin, 0, 20);
+    }
+
+    public void end() {
+        timerEnded = true;
+        bossBars.forEach(Audience::hideBossBar);
     }
 }

@@ -55,7 +55,9 @@ public class PlayerListener implements Listener {
         if (damagedTeam == null) return;
         if (damagerTeam == null) return;
 
-        if (damagerTeam.equals(damagedTeam)) event.setCancelled(true);
-        damager.sendMessage(Component.text("You cannot damage your own team!", TextColor.fromHexString("#EF6461")));
+        if (damagerTeam.equals(damagedTeam)) {
+            event.setCancelled(true);
+            damager.sendMessage(Component.text("You cannot damage your own team!", TextColor.fromHexString("#EF6461")));
+        }
     }
 }

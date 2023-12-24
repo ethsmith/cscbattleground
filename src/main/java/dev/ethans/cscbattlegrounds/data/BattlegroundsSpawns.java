@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
 import lombok.Getter;
+import org.bukkit.Location;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
@@ -32,6 +33,15 @@ public class BattlegroundsSpawns {
 
     @Getter
     private final static Queue<Integer> playerSpawnDeleteQueue = new LinkedList<>();
+
+    public static void addChestSpawn(Location location) {
+        int lastId = BattlegroundsSpawns.getChestSpawns().keySet().stream().max(Integer::compareTo).orElse(0);
+        double x = location.getBlockX() + 0.5;
+        double y = location.getBlockY()  + 1;
+        double z = location.getBlockZ() + 0.5;
+        ChestSpawn spawn = new ChestSpawn(lastId + 1, new Position(location.getWorld().getName(), x, y, z));
+        BattlegroundsSpawns.getChestSpawns().put(lastId + 1, spawn);
+    }
 
     public static void deletePlayerSpawnFiles() {
         while (!playerSpawnDeleteQueue.isEmpty()) {

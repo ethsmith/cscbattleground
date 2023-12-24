@@ -1,15 +1,25 @@
 package dev.ethans.cscbattlegrounds.command;
 
+import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
 import dev.ethans.cscbattlegrounds.data.BattlegroundSpawn;
 import dev.ethans.cscbattlegrounds.data.BattlegroundsSpawns;
+import dev.ethans.cscbattlegrounds.data.ChestSpawn;
 import dev.ethans.cscbattlegrounds.data.Position;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerSpawnCommand implements CommandExecutor {
+
+    private boolean showingMarkers = false;
+
+    public PlayerSpawnCommand() {
+        createMarkerRunnable();
+    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
@@ -59,6 +69,16 @@ public class PlayerSpawnCommand implements CommandExecutor {
                         BattlegroundsSpawns.getPlayerSpawnDeleteQueue().offer(id);
                         break;
 
+                    case "markers":
+                        if (showingMarkers) {
+                            showingMarkers = false;
+                            player.sendMessage("§cDisabled chest spawn markers.");
+                        } else {
+                            showingMarkers = true;
+                            player.sendMessage("§aEnabled chest spawn markers.");
+                        }
+                        break;
+
                     default:
                         player.sendMessage("§cInvalid subcommand.");
                         break;
@@ -69,7 +89,7 @@ public class PlayerSpawnCommand implements CommandExecutor {
                 break;
 
         }
-        return false;
+        return true;
     }
 
     private void addPlayerSpawn(Player player) {
@@ -80,5 +100,20 @@ public class PlayerSpawnCommand implements CommandExecutor {
         BattlegroundSpawn spawn = new BattlegroundSpawn(lastId + 1, new Position(player.getWorld().getName(), x, y, z));
         BattlegroundsSpawns.getPlayerSpawns().put(lastId + 1, spawn);
         player.sendMessage("§aAdded player spawn with ID " + (lastId + 1) + ".");
+    }
+
+    private void createMarkerRunnable() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!showingMarkers) return;
+
+                for (ChestSpawn spawn : BattlegroundsSpawns.getChestSpawns().values()) {
+                    Position position = spawn.getPosition();
+                    Location location = new Location(CSCBattlegroundsPlugin.getInstance().getServer().getWorld(position.getWorld()), position.getX(), position.getY(), position.getZ());
+                    location.getWorld().spawnParticle(org.bukkit.Particle.VILLAGER_HAPPY, location, 10);
+                }
+            }
+        }.runTaskTimer(CSCBattlegroundsPlugin.getInstance(), 0, 1);
     }
 }

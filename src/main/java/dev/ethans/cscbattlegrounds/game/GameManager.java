@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
 import dev.ethans.cscbattlegrounds.team.BattlegroundsTeam;
 import lombok.Data;
+import lombok.Getter;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import java.awt.*;
@@ -15,6 +17,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class GameManager {
@@ -26,6 +29,9 @@ public class GameManager {
     private final static String TEAM_FILE_PATH = plugin.getDataFolder().getAbsolutePath() + "/teams/";
 
     private final Set<BattlegroundsTeam> teams = new HashSet<>();
+
+    @Getter
+    private BattlegroundsTeam winningTeam = null;
 
 //    public void startGame() {
 //        plugin.getDayNightCycle().reset();
@@ -58,6 +64,21 @@ public class GameManager {
 
     public int maxPlayers() {
         return teams.stream().mapToInt(team -> team.getPlayers().size()).sum();
+    }
+
+    public boolean isOneTeamLeft() {
+        // stream teams and return a count of teams that have at least one player that is online and in survival mode
+        Set<BattlegroundsTeam> aliveTeams = teams.stream().filter(team -> team.getPlayers().stream().anyMatch(uuid -> {
+            if (plugin.getServer().getPlayer(uuid) == null) return false;
+            Player player = plugin.getServer().getPlayer(uuid);
+            if (player == null) return false;
+            return player.isOnline() && !player.isDead() && player.getGameMode() == GameMode.SURVIVAL;
+        })).collect(Collectors.toSet());
+
+        if (aliveTeams.size() == 1)
+            winningTeam = aliveTeams.iterator().next();
+
+        return aliveTeams.size() == 1;
     }
 
     public void saveTeams() {

@@ -42,6 +42,16 @@ public class Notices {
         return Component.text("World Border Duration: " + time, TextColor.fromHexString("#1DACF7"));
     }
 
+    public static TextComponent winningTeamAnnouncementTitle(BattlegroundsTeam team) {
+        return team.getNameComponent()
+                .append(Component.text(" Won!"))
+                .color(team.getTextColor());
+    }
+
+    public static TextComponent winningTeamAnnouncementSubtitle(BattlegroundsTeam team) {
+        return Component.text("Thanks for playing!", NamedTextColor.GRAY);
+    }
+
     public static String worldBorderTimeString(long timeLeft) {
         String time = String.format("%02d:%02d", timeLeft / 60, timeLeft % 60);
         return "Border: " + time;

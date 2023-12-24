@@ -7,11 +7,14 @@ import dev.ethans.cscbattlegrounds.chests.InstancedChest;
 import dev.ethans.cscbattlegrounds.chests.InstancedChestListener;
 import dev.ethans.cscbattlegrounds.data.BattlegroundSpawn;
 import dev.ethans.cscbattlegrounds.data.BattlegroundsSpawns;
+import dev.ethans.cscbattlegrounds.notices.Notices;
 import dev.ethans.cscbattlegrounds.state.base.GameState;
 import dev.ethans.cscbattlegrounds.state.ingame.listener.PlayerListener;
+import dev.ethans.cscbattlegrounds.team.BattlegroundsTeam;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.title.Title;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -60,9 +63,14 @@ public class InGameState extends GameState {
 
     @Override
     protected void onEnd() {
-        plugin.getLogger().info("Ingame state ended");
         instancedChests.forEach(chest -> chest.setType(Material.AIR));
         instancedChestDisplays.forEach(Entity::remove);
+
+        BattlegroundsTeam winningTeam = plugin.getGameManager().getWinningTeam();
+        Title teamWonTitle = Title.title(Notices.winningTeamAnnouncementTitle(winningTeam), Notices.winningTeamAnnouncementSubtitle(winningTeam), Title.Times.times(Duration.ofSeconds(2), Duration.ofSeconds(5), Duration.ofSeconds(2)));
+        plugin.getServer().getOnlinePlayers().forEach(player -> player.showTitle(teamWonTitle));
+
+        shrinkingWorldBorder.end();
     }
 
     @Override
@@ -113,6 +121,6 @@ public class InGameState extends GameState {
 
     @Override
     public boolean isReadyToEnd() {
-        return false;
+        return plugin.getGameManager().isOneTeamLeft();
     }
 }
