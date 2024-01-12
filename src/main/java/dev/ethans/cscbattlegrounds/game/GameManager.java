@@ -33,10 +33,6 @@ public class GameManager {
     @Getter
     private BattlegroundsTeam winningTeam = null;
 
-//    public void startGame() {
-//        plugin.getDayNightCycle().reset();
-//    }
-
     public BattlegroundsTeam getPlayerTeam(Player player) {
         return teams.stream().filter(team -> team.getPlayers().contains(player.getUniqueId())).findFirst().orElse(null);
     }

@@ -2,6 +2,7 @@ package dev.ethans.cscbattlegrounds.team;
 
 import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -14,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Data
+@NoArgsConstructor
 public class BattlegroundsTeam {
 
     private final static CSCBattlegroundsPlugin plugin = CSCBattlegroundsPlugin.getInstance();
@@ -29,11 +31,7 @@ public class BattlegroundsTeam {
     private Set<UUID> players;
 
     public BattlegroundsTeam(String name, String color) {
-        this.name = name;
-        this.color = color;
-        this.textColor = color.startsWith("#") ? TextColor.fromHexString(color) : NamedTextColor.NAMES.value(color.toLowerCase());
-        this.nameComponent = Component.text(name, textColor);
-        this.players = new HashSet<>();
+        new BattlegroundsTeam(name, color, new HashSet<>());
     }
 
     public BattlegroundsTeam(String name, String color, Set<UUID> players) {
@@ -43,8 +41,6 @@ public class BattlegroundsTeam {
         this.nameComponent = Component.text(name, textColor);
         this.players = players;
     }
-
-    public BattlegroundsTeam() {}
 
     public void setTransientFields() {
         this.textColor = color.startsWith("#") ? TextColor.fromHexString(color) : NamedTextColor.NAMES.value(color.toLowerCase());

@@ -1,8 +1,10 @@
 package dev.ethans.cscbattlegrounds.data;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class ChestSpawn {
 
     private int id;
@@ -12,6 +14,4 @@ public class ChestSpawn {
         this.id = id;
         this.position = position;
     }
-
-    public ChestSpawn() {}
 }

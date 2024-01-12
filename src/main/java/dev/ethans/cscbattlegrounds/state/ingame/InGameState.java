@@ -11,6 +11,8 @@ import dev.ethans.cscbattlegrounds.notices.Notices;
 import dev.ethans.cscbattlegrounds.state.base.GameState;
 import dev.ethans.cscbattlegrounds.state.ingame.listener.PlayerListener;
 import dev.ethans.cscbattlegrounds.team.BattlegroundsTeam;
+import dev.ethans.cscbattlegrounds.util.Strings;
+import dev.ethans.cscbattlegrounds.util.Styles;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -67,7 +69,7 @@ public class InGameState extends GameState {
         instancedChestDisplays.forEach(Entity::remove);
 
         BattlegroundsTeam winningTeam = plugin.getGameManager().getWinningTeam();
-        Title teamWonTitle = Title.title(Notices.winningTeamAnnouncementTitle(winningTeam), Notices.winningTeamAnnouncementSubtitle(winningTeam), Title.Times.times(Duration.ofSeconds(2), Duration.ofSeconds(5), Duration.ofSeconds(2)));
+        Title teamWonTitle = Title.title(Strings.WINNING_TEAM_TITLE(winningTeam), Strings.WINNING_TEAM_SUBTITLE(winningTeam), Title.Times.times(Duration.ofSeconds(2), Duration.ofSeconds(5), Duration.ofSeconds(2)));
         plugin.getServer().getOnlinePlayers().forEach(player -> player.showTitle(teamWonTitle));
 
         shrinkingWorldBorder.end();
@@ -107,7 +109,7 @@ public class InGameState extends GameState {
             InstancedChestListener.getInstancedChests().put(id, new InstancedChest(id, chest));
 
             ArmorStand armorStand = location.getWorld().spawn(location.clone().subtract(0, 0.75, 0), ArmorStand.class);
-            armorStand.customName(Component.text("Instanced Chest", TextColor.fromHexString("#1dacf7")));
+            armorStand.customName(Component.text("Instanced Chest", Styles.PRIMARY_BLUE));
             armorStand.setCustomNameVisible(true);
             armorStand.setGravity(false);
             armorStand.setVisible(false);

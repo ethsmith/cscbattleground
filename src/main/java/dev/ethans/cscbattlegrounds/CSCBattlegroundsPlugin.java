@@ -65,7 +65,6 @@ public final class CSCBattlegroundsPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new WorldTimeListener(), this);
         getServer().getPluginManager().registerEvents(new MobListener(), this);
         getServer().getPluginManager().registerEvents(new InstancedChestListener(), this);
-//        getServer().getScheduler().runTaskLater(this, () -> dayNightCycle = new DayNightCycle(), 15 * 20);
 
         dayNightCycle = new DayNightCycle();
 

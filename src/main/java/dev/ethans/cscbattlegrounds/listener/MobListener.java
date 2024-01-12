@@ -8,24 +8,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntitySpawnEvent;
 
 public class MobListener implements Listener {
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void removeSunlightDamage(EntitySpawnEvent event) {
-        if (event.getEntity().getType() == EntityType.ZOMBIE) {
-            Zombie zombie = (Zombie) event.getEntity();
-            zombie.setShouldBurnInDay(false);
-            return;
-        }
-
-        if (event.getEntity().getType() == EntityType.SKELETON) {
-            Skeleton skeleton = (Skeleton) event.getEntity();
-            skeleton.setShouldBurnInDay(false);
-            return;
-        }
-    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void modifyDamageAtNight(EntityDamageByEntityEvent event) {

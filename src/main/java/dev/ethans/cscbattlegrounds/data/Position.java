@@ -1,10 +1,12 @@
 package dev.ethans.cscbattlegrounds.data;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 @Data
+@NoArgsConstructor
 public class Position {
 
     private String world;
@@ -18,8 +20,6 @@ public class Position {
         this.y = y;
         this.z = z;
     }
-
-    public Position() {}
 
     public Location toLocation() {
         return new Location(Bukkit.getWorld(world), x, y, z);

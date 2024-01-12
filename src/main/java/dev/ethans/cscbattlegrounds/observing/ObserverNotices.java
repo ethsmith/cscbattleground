@@ -2,6 +2,7 @@ package dev.ethans.cscbattlegrounds.observing;
 
 import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
 import dev.ethans.cscbattlegrounds.team.BattlegroundsTeam;
+import dev.ethans.cscbattlegrounds.util.Strings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -23,16 +24,7 @@ public class ObserverNotices {
 
         Location location = player.getLocation();
 
-        return Component.text("Team ")
-                .append(teamOne.getNameComponent())
-                .color(teamOne.getTextColor())
-                .append(Component.text(" and "))
-                .append(Component.text(" Team "))
-                .append(teamTwo.getNameComponent())
-                .color(teamTwo.getTextColor())
-                .append(Component.text(" are within 10 blocks of each other!"))
-                .color(NamedTextColor.GRAY)
-                .clickEvent(ClickEvent.runCommand("tp " + location.getX() + " " + location.getY() + 5 + " " + location.getZ()));
+        return Strings.TWO_TEAMS_CLOSE(teamOne, teamTwo, location);
     }
 
     public static TextComponent playerNearManyMobs(Player player) {

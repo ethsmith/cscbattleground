@@ -1,15 +1,11 @@
 package dev.ethans.cscbattlegrounds.state;
 
 import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
-import dev.ethans.cscbattlegrounds.data.BattlegroundsSpawns;
 import dev.ethans.cscbattlegrounds.state.base.GameState;
-import dev.ethans.cscbattlegrounds.util.WorldScanner;
-import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
-import java.util.List;
 
 public class PopulateStage extends GameState {
 

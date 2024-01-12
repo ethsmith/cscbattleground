@@ -1,9 +1,10 @@
 package dev.ethans.cscbattlegrounds.data;
 
 import lombok.Data;
-import org.bukkit.util.Vector;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class BattlegroundSpawn {
 
     private int id;
@@ -13,6 +14,4 @@ public class BattlegroundSpawn {
         this.id = id;
         this.position = position;
     }
-
-    public BattlegroundSpawn() {}
 }

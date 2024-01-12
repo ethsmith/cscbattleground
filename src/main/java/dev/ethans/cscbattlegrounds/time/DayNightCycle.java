@@ -31,8 +31,6 @@ public class DayNightCycle {
         scheduleDayTask();
         plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () ->
                 world.setTime((long) currentTime), 1, 1);
-//        plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () ->
-//                plugin.getLogger().info("Time: " + world.getTime()), 20, 20);
     }
 
     private void scheduleDayTask() {

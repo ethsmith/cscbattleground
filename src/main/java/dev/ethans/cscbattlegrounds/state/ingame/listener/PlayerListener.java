@@ -4,8 +4,9 @@ import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
 import dev.ethans.cscbattlegrounds.notices.NoticeSounds;
 import dev.ethans.cscbattlegrounds.notices.Notices;
 import dev.ethans.cscbattlegrounds.team.BattlegroundsTeam;
+import dev.ethans.cscbattlegrounds.util.Strings;
+import dev.ethans.cscbattlegrounds.util.Styles;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,23 +26,19 @@ public class PlayerListener implements Listener {
 
         if (team.getDeadPlayers().size() == team.getPlayers().size()) {
             NoticeSounds.playEliminatedSound();
-            plugin.getServer().broadcast(Notices.teamEliminated(team));
+            plugin.getServer().broadcast(Strings.TEAM_ELIMINATED(team));
             return;
         }
 
         NoticeSounds.playEliminatedSound();
-        plugin.getServer().broadcast(Notices.playerEliminated(player));
+        plugin.getServer().broadcast(Strings.PLAYER_ELIMINATED(player));
     }
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         if (!event.hasExplicitlyChangedPosition()) return;
         Player player = event.getPlayer();
-        player.sendActionBar(Component.text("Your Coords: ", TextColor.fromHexString("#1DACF7"))
-                .append(Component.text("X: " + String.format("%.2f", player.getLocation().getX())
-                                + " Y: " + String.format("%.2f", player.getLocation().getY())
-                                + " Z: " + String.format("%.2f", player.getLocation().getZ()),
-                        TextColor.fromHexString("#EFE9F4"))));
+        player.sendActionBar(Strings.YOUR_COORDS(player));
     }
 
     @EventHandler
@@ -57,7 +54,7 @@ public class PlayerListener implements Listener {
 
         if (damagerTeam.equals(damagedTeam)) {
             event.setCancelled(true);
-            damager.sendMessage(Component.text("You cannot damage your own team!", TextColor.fromHexString("#EF6461")));
+            damager.sendMessage(Strings.YOU_CANT_DAMAGE_YOUR_OWN_TEAM);
         }
     }
 }

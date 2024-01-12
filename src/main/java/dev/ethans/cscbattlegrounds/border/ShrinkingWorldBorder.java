@@ -3,6 +3,8 @@ package dev.ethans.cscbattlegrounds.border;
 import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
 import dev.ethans.cscbattlegrounds.notices.Notices;
 import dev.ethans.cscbattlegrounds.util.StringUtil;
+import dev.ethans.cscbattlegrounds.util.Strings;
+import dev.ethans.cscbattlegrounds.util.Styles;
 import lombok.Data;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
@@ -66,7 +68,7 @@ public class ShrinkingWorldBorder {
                         return;
                     }
 
-                    plugin.getServer().broadcast(Notices.worldBorderShrinking());
+                    plugin.getServer().broadcast(Strings.WORLD_BORDER_SHRINKING);
                     plugin.getServer().getLogger().info("Current world border size: " + worldBorder.getSize());
                     worldBorder.setSize(worldBorder.getSize() - shrinkAmount, shrinkTime.toSeconds());
                 }
@@ -89,19 +91,19 @@ public class ShrinkingWorldBorder {
                 long secondsLeft = secondsToShrink.getAndDecrement();
                 float progress = (float) secondsLeft / shrinkInterval.getSeconds();
 
-                String name = StringUtil.evenlySpaced(Notices.worldBorderTimeString(secondsLeft),
+                String gameInfoStr = StringUtil.evenlySpaced(Strings.WORLD_BORDER_TIME_STRING(secondsLeft),
                         "Alive: " + plugin.getGameManager().getAlivePlayerCount(),
                         "Players: " + plugin.getGameManager().maxPlayers());
 
-                TextComponent component = Component.text(name, TextColor.fromHexString("#1dacf7"));
+                TextComponent gameInfo = Component.text(gameInfoStr, Styles.PRIMARY_BLUE);
 
                 plugin.getServer().getOnlinePlayers().forEach(player -> {
                     if (bossBars.containsKey(player)) {
                         bossBars.get(player).progress(progress);
-                        bossBars.get(player).name(component);
+                        bossBars.get(player).name(gameInfo);
                         return;
                     }
-                    BossBar bossBar = BossBar.bossBar(component, progress, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
+                    BossBar bossBar = BossBar.bossBar(gameInfo, progress, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
                     player.showBossBar(bossBar);
                     bossBars.put(player, bossBar);
                 });

@@ -3,11 +3,11 @@ package dev.ethans.cscbattlegrounds.scoreboard;
 import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
 import dev.ethans.cscbattlegrounds.team.BattlegroundsTeam;
 import dev.ethans.cscbattlegrounds.util.StringUtil;
+import dev.ethans.cscbattlegrounds.util.Styles;
 import fr.mrmicky.fastboard.adventure.FastBoard;
 import lombok.Data;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.OfflinePlayer;
@@ -23,8 +23,8 @@ public class BattlegroundsScoreboard {
 
     private final FastBoard board;
 
-    private final static TextComponent title = Component.text("CSC", TextColor.fromHexString("#e3c913"), TextDecoration.BOLD)
-            .append(Component.text(" Battleground", TextColor.fromHexString("#1dacf7"), TextDecoration.BOLD));
+    private final static TextComponent title = Component.text("CSC", Styles.YELLOW, TextDecoration.BOLD)
+            .append(Component.text(" Battleground", Styles.PRIMARY_BLUE, TextDecoration.BOLD));
 
 
     public BattlegroundsScoreboard(Player player) {
@@ -39,29 +39,29 @@ public class BattlegroundsScoreboard {
         if (team == null) {
             board.updateLines(
                     Component.text(""),
-                    Component.text("Waiting for players...").color(TextColor.fromHexString("#1dacf7"))
+                    Component.text("Waiting for players...").color(Styles.PRIMARY_BLUE)
             );
             return;
         }
 
-        List<Component> teamMembers = new ArrayList<>();
-        teamMembers.add(Component.text(""));
-        teamMembers.add(Component.text("Teammates:", TextColor.fromHexString("#3454D1")));
+        List<Component> infoLines = new ArrayList<>();
+        infoLines.add(Component.text(""));
+        infoLines.add(Component.text("Teammates:", Styles.SECONDARY_BLUE));
 
         team.getPlayers().forEach(uuid -> {
             OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(uuid);
             Player teamMember = offlinePlayer.getPlayer();
 
             String playerName = teamMember != null ? teamMember.getName() + " ✔" : offlinePlayer.getName() + " ✘";
-            TextColor textColor = teamMember != null ? TextColor.fromHexString("#1dacf7") : TextColor.fromHexString("#EF6461");
+            TextColor textColor = teamMember != null ? Styles.PRIMARY_BLUE : Styles.PRIMARY_RED;
 
-            teamMembers.add(Component.text(playerName, textColor));
+            infoLines.add(Component.text(playerName, textColor));
         });
 
-        teamMembers.add(Component.text(""));
-        teamMembers.add(Component.text("Team Color: ", TextColor.fromHexString("#3454D1")));
-        teamMembers.add(Component.text(StringUtil.firstLetterUppercase(team.getColor()), team.getTextColor()));
+        infoLines.add(Component.text(""));
+        infoLines.add(Component.text("Team Color: ", Styles.SECONDARY_BLUE));
+        infoLines.add(Component.text(StringUtil.firstLetterUppercase(team.getColor()), team.getTextColor()));
 
-        board.updateLines(teamMembers);
+        board.updateLines(infoLines);
     }
 }

@@ -4,6 +4,8 @@ import dev.ethans.cscbattlegrounds.CSCBattlegroundsPlugin;
 import dev.ethans.cscbattlegrounds.game.GameManager;
 import dev.ethans.cscbattlegrounds.scoreboard.BattlegroundsScoreboard;
 import dev.ethans.cscbattlegrounds.state.base.GameState;
+import dev.ethans.cscbattlegrounds.util.Strings;
+import dev.ethans.cscbattlegrounds.util.Styles;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.audience.Audience;
@@ -61,18 +63,15 @@ public class PregameState extends GameState {
                     TextColor timeColor;
 
                     if (atomicSeconds.get() > 3)
-                        timeColor = TextColor.fromHexString("#3454d1");
+                        timeColor = Styles.SECONDARY_BLUE;
                     else if (atomicSeconds.get() <= 3 && atomicSeconds.get() >= 2)
-                        timeColor = TextColor.fromHexString("#e3c913");
+                        timeColor = Styles.YELLOW;
                     else
-                        timeColor = TextColor.fromHexString("#ef6461");
+                        timeColor = Styles.PRIMARY_RED;
 
                     Title title = Title.title(
-                            Component.text("Starting in ", TextColor.fromHexString("#1dacf7"))
-                                    .append(Component.text(String.valueOf(atomicSeconds.get()), timeColor))
-                                    .append(Component.text(" seconds...", TextColor.fromHexString("#1dacf7"))),
-
-                            Component.text("Good luck!", TextColor.fromHexString("#1dacf7")),
+                            Strings.STARTING_IN_TITLE(atomicSeconds.get(), timeColor),
+                            Strings.STARTING_IN_SUB_TITLE,
                             Title.Times.times(Duration.ZERO, Duration.ofMillis(1200), Duration.ZERO)
                     );
 
@@ -111,8 +110,8 @@ public class PregameState extends GameState {
         plugin.getServer().getOnlinePlayers().forEach(player ->
         {
             Title title = Title.title(
-                    Component.text("Waiting for players...", TextColor.fromHexString("#3454D1")),
-                    Component.text("(" + gameManager.playersOnline() + "/" + gameManager.maxPlayers() + ") Players ready!", TextColor.fromHexString("#1dacf7")),
+                    Strings.WAITING_FOR_PLAYERS_TITLE,
+                    Strings.WAITING_FOR_PLAYERS_SUB_TITLE,
                     Title.Times.times(Duration.ZERO, Duration.ofMillis(1200), Duration.ZERO)
             );
             player.showTitle(title);
